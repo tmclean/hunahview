@@ -10,9 +10,9 @@ import com.google.api.client.util.Strings;
 import com.google.common.collect.Lists;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
-import net.tmclean.hunahview.lib.data.model.Event;
 import net.tmclean.hunahview.lib.data.source.BeerDataSource;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
+import net.tmclean.hunahview.lib.event.EventRegistry;
 import net.tmclean.hunahview.rest.api.HunahviewAPI;
 import net.tmclean.hunahview.servlet.HunahViewDataSourceServletListner;
 
@@ -20,12 +20,15 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 {
 	@Context HttpServletRequest httpRequest;
 	
-	@Override
-	public List<Event> getEvents() 
+	private EventRegistry getEventRegistry()
 	{
-		List<Event> events = Lists.newArrayListWithCapacity( 1 );
-		events.add( new Event() );
-		return events;
+		return (EventRegistry)httpRequest.getSession().getServletContext().getAttribute( HunahViewDataSourceServletListner.EVENT_REGISTRY_KEY );
+	}
+	
+	@Override
+	public List<String> getEvents() 
+	{
+		return getEventRegistry().getEventNames();
 	}
 
 	@Override
@@ -33,7 +36,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 	{
 		try 
 		{
-			BeerDataSource source = (BeerDataSource)(httpRequest.getSession().getServletContext().getAttribute( HunahViewDataSourceServletListner.DATA_SRC_KEY ));
+			BeerDataSource source = getEventRegistry().getEvent( eventName ).getDataSource();
 			List<Beer> beers = source.get();
 			
 			if( !Strings.isNullOrEmpty( brewery ) )
@@ -69,10 +72,10 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 	{
 		try
 		{
-			List<String> breweries = Lists.newArrayList();
-			BeerDataSource source = (BeerDataSource)(httpRequest.getSession().getServletContext().getAttribute( HunahViewDataSourceServletListner.DATA_SRC_KEY ));
+			BeerDataSource source = getEventRegistry().getEvent( eventName ).getDataSource();
 			List<Beer> beers = source.get();
-			
+
+			List<String> breweries = Lists.newArrayList();
 			for( Beer beer : beers )
 			{
 				if( !breweries.contains( beer.getBrewery() ) )

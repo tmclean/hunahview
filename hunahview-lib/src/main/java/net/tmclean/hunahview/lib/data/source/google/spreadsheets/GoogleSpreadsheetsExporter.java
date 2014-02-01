@@ -9,9 +9,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.Properties;
 import java.util.Set;
 
+import net.tmclean.hunahview.lib.config.ContextAwareProperties;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
 import net.tmclean.hunahview.lib.data.source.hunahpu2014.ExportFormats;
 
@@ -32,9 +32,9 @@ import com.google.common.io.Closer;
 
 public class GoogleSpreadsheetsExporter 
 {
-	public static final String GOOGLE_APP_NAME  = "net.tmclean.hunahview.lib.data.source.google.spreadsheets.appName";
-	public static final String GOOGLE_CLIENT_ID = "net.tmclean.hunahview.lib.data.source.google.spreadsheets.clientId";
-	public static final String GOOGLE_CERT_FILE = "net.tmclean.hunahview.lib.data.source.google.spreadsheets.certFile";
+	public static final String GOOGLE_APP_NAME  = "data.source.google.spreadsheets.appName";
+	public static final String GOOGLE_CLIENT_ID = "data.source.google.spreadsheets.clientId";
+	public static final String GOOGLE_CERT_FILE = "data.source.google.spreadsheets.certFile";
 	
 	private static final Set<String> CLIENT_SCOPES = Collections.singleton( DriveScopes.DRIVE_FILE );
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -46,7 +46,7 @@ public class GoogleSpreadsheetsExporter
 	
 	private Drive drive = null;
 	
-	public void configure( Properties properties ) throws BeerDataSourceException, GoogleException 
+	public void configure( ContextAwareProperties properties ) throws BeerDataSourceException, GoogleException 
 	{
 		Preconditions.checkNotNull( properties );
 		

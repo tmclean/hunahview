@@ -8,19 +8,16 @@ import java.util.Properties;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import net.tmclean.hunahview.lib.data.source.BeerDataSource;
-import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
+import net.tmclean.hunahview.lib.event.EventRegistry;
 
 import com.google.api.client.util.Strings;
 import com.google.common.base.Preconditions;
 
 public class HunahViewDataSourceServletListner implements ServletContextListener
 {
-	public static final String CONFIG_FILE_KEY = "net.tmclean.hunahview.server.app.config";
-	private static final String DATA_SRC_CLASS_KEY = "net.tmclean.hunahview.server.source.class";
-	public static final String DATA_SRC_KEY = "net.tmclean.hunahview.server.source";
+	public static final String EVENT_REGISTRY_KEY = "net.tmclean.hunahview.server.event.registry";
 	
-	private BeerDataSource ds = null;
+	public static final String CONFIG_FILE_KEY = "net.tmclean.hunahview.server.app.config";
 
 	@Override
 	public void contextInitialized( ServletContextEvent event ) 
@@ -37,12 +34,15 @@ public class HunahViewDataSourceServletListner implements ServletContextListener
 				Properties properties = new Properties();
 				properties.load( new FileReader( configFile ) );
 				
-				ds = (BeerDataSource)Class.forName( properties.getProperty( DATA_SRC_CLASS_KEY ) ).newInstance();
-				ds.configure( properties );
+				String eventsStr = properties.getProperty( "net.tmclean.hunahview.events" );
 				
-				event.getServletContext().setAttribute( DATA_SRC_KEY, ds );
+				Preconditions.checkArgument( !Strings.isNullOrEmpty( eventsStr ) );
+				
+				EventRegistry registry = new EventRegistry( properties );
+				
+				event.getServletContext().setAttribute( EVENT_REGISTRY_KEY, registry );
 			} 
-			catch( InstantiationException | IllegalAccessException | ClassNotFoundException | IOException | BeerDataSourceException e ) 
+			catch( IOException e ) 
 			{
 				e.printStackTrace();
 			}
@@ -50,9 +50,11 @@ public class HunahViewDataSourceServletListner implements ServletContextListener
 	}
 	
 	@Override
-	public void contextDestroyed( ServletContextEvent event ) 
+	public void contextDestroyed( ServletContextEvent event )  
 	{
-		if( ds != null )
-			ds.shutdown();
+		EventRegistry registry = (EventRegistry)event.getServletContext().getAttribute( EVENT_REGISTRY_KEY ); 
+		
+		if( registry != null )
+			registry.shutdown();
 	}
 }

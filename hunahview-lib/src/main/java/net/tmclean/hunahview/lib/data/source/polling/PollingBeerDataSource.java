@@ -1,13 +1,13 @@
 package net.tmclean.hunahview.lib.data.source.polling;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.api.client.util.Strings;
 import com.google.common.base.Preconditions;
 
+import net.tmclean.hunahview.lib.config.ContextAwareProperties;
 import net.tmclean.hunahview.lib.data.model.Beer;
 import net.tmclean.hunahview.lib.data.source.BeerDataSource;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
@@ -16,18 +16,18 @@ import net.tmclean.hunahview.lib.data.storage.BeerStorageException;
 
 public class PollingBeerDataSource implements BeerDataSource
 {
-	public static final String BEER_POLLING_SOURCE_PREFIX = BEER_SOURCE_PREFIX + "polling.";
+	public static final String BEER_POLLING_SOURCE_PREFIX = BEER_SOURCE_PREFIX + ".polling";
 	
-	public static final String DATA_SOURCE_CLASS  = BEER_POLLING_SOURCE_PREFIX + "source.class";
-	public static final String DATA_STORAGE_CLASS = BEER_POLLING_SOURCE_PREFIX + "storage.class";
-	public static final String DATA_POLL_DELAY    = BEER_POLLING_SOURCE_PREFIX + "delay";
+	public static final String DATA_SOURCE_CLASS  = BEER_POLLING_SOURCE_PREFIX + ".source.class";
+	public static final String DATA_STORAGE_CLASS = BEER_POLLING_SOURCE_PREFIX + ".storage.class";
+	public static final String DATA_POLL_DELAY    = BEER_POLLING_SOURCE_PREFIX + ".delay";
 	
 	private Timer timer = new Timer();
 	private BeerDataSource source = null;
 	private BeerStorage storage = null;
 
 	@Override
-	public void configure( Properties properties ) throws BeerDataSourceException 
+	public void configure( ContextAwareProperties properties ) throws BeerDataSourceException 
 	{
 		String sourceClassName = properties.getProperty( DATA_SOURCE_CLASS );
 		String storageClassName = properties.getProperty( DATA_STORAGE_CLASS );
@@ -72,19 +72,19 @@ public class PollingBeerDataSource implements BeerDataSource
 		@Override
 		public void run() 
 		{
-			synchronized (BEER_SOURCE_PREFIX) {
-				
-			}
-			try 
+			synchronized( BEER_SOURCE_PREFIX ) 
 			{
-				System.out.println( "Reading beer" );
-				List<Beer> newBeerList = source.get();
-				System.out.println( "Read " + newBeerList.size() + " beers" );
-				storage.pushNewBeerList( newBeerList );
-			}
-			catch( BeerDataSourceException e ) 
-			{
-				e.printStackTrace();
+				try 
+				{
+					System.out.println( "Reading beer" );
+					List<Beer> newBeerList = source.get();
+					System.out.println( "Read " + newBeerList.size() + " beers" );
+					storage.pushNewBeerList( newBeerList );
+				}
+				catch( BeerDataSourceException e ) 
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 	}

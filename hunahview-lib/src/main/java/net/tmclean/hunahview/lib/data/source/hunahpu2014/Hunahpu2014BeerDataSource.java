@@ -2,10 +2,10 @@ package net.tmclean.hunahview.lib.data.source.hunahpu2014;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 
 import com.google.common.base.Preconditions;
 
+import net.tmclean.hunahview.lib.config.ContextAwareProperties;
 import net.tmclean.hunahview.lib.data.model.Beer;
 import net.tmclean.hunahview.lib.data.source.BeerDataSource;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
@@ -17,7 +17,7 @@ public class Hunahpu2014BeerDataSource extends GoogleSpreadsheetsExporter implem
 	private static final String HUNAHPU_TAP_LIST_ID = "0Auhv_-iTf6vpdFA2bUxNbkFjMi1Bem5raEd6Y1dYVGc";
 	
 	@Override
-	public void configure( Properties properties ) throws BeerDataSourceException 
+	public void configure( ContextAwareProperties properties ) throws BeerDataSourceException 
 	{
 		Preconditions.checkNotNull( properties );
 		
