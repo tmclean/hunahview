@@ -20,6 +20,11 @@ public abstract class Location
 	public String getCountry() { return country; }
 	public void setCountry(String country) { this.country = country; }
 	
+	public boolean match( String str )
+	{
+		return str.equalsIgnoreCase( country );
+	}
+	
 	@Override
 	public boolean equals( Object obj ) 
 	{

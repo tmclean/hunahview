@@ -13,6 +13,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
+import net.tmclean.hunahview.lib.data.model.Brewery;
 import net.tmclean.hunahview.lib.data.model.Location;
 
 @Path( "/api" )
@@ -32,15 +33,22 @@ public interface HunahviewAPI
 	public List<Location> getEventLocations( @PathParam( "eventName" ) String eventName );
 	
 	@GET
-	@Path( "/{eventName}/taps")
+	@Path( "/{eventName}/beers/{location}")
 	@Produces( MediaType.APPLICATION_JSON )
-	@ApiOperation( "/{eventName}/taps" )
-	public List<Beer> getEventTaps( @PathParam( "eventName" ) String eventName,
-									@QueryParam( "brewery" ) String brewery );
+	@ApiOperation( "/{eventName}/beers" )
+	public List<Beer> getEventBeersByLocation( @PathParam( "eventName" ) String eventName,
+											   @PathParam( "location" ) String location );
+	
+	@GET
+	@Path( "/{eventName}/beers")
+	@Produces( MediaType.APPLICATION_JSON )
+	@ApiOperation( "/{eventName}/beers" )
+	public List<Beer> getEventBeers( @PathParam( "eventName" ) String eventName,
+									 @QueryParam( "brewery" ) String brewery );
 	
 	@GET
 	@Path( "/{eventName}/breweries")
 	@Produces( MediaType.APPLICATION_JSON )
 	@ApiOperation( "/{eventName}/breweries/" )
-	public List<String> getEventBreweries( @PathParam( "eventName" ) String eventName );
+	public List<Brewery> getEventBreweries( @PathParam( "eventName" ) String eventName );
 }

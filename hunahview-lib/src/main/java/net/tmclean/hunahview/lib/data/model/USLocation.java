@@ -1,6 +1,7 @@
 package net.tmclean.hunahview.lib.data.model;
 
 import com.google.api.client.repackaged.com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 
 public class USLocation extends Location 
 {
@@ -26,6 +27,16 @@ public class USLocation extends Location
 	
 	public String getState() { return state; }
 	public void setState(String state) { this.state = state; }
+	
+	@Override
+	public boolean match( String str ) 
+	{
+		Preconditions.checkNotNull( str );
+		
+		return super.match( str ) || 
+			   str.equalsIgnoreCase( city ) || 
+			   str.equalsIgnoreCase( state );
+	}
 	
 	@Override
 	public boolean equals( Object obj ) 
