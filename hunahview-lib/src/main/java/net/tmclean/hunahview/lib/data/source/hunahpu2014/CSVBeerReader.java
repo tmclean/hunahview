@@ -37,10 +37,10 @@ public final class CSVBeerReader
 		Beer beer = null;
 		do
 		{
-			beer = reader.read( Beer.class, "New", "Brewery", "Beer", "BeerNotes", "BreweryLocation" );
+			beer = reader.read( Hunahpu2014Beer.class, "New", "Brewery", "Beer", "BeerNotes", "BreweryLocation" );
 			
 			if( beer != null )
-				beers.add( beer );
+				beers.add( new Beer( beer ) );
 		}
 		while( beer != null );
 		
