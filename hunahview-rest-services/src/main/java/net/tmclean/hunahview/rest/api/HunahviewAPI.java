@@ -26,15 +26,15 @@ public interface HunahviewAPI
 	public List<Event> getEvents();
 	
 	@GET
-	@Path( "/taps/{eventName}")
+	@Path( "/{eventName}/taps")
 	@Produces( MediaType.APPLICATION_JSON )
-	@ApiOperation( "/taps/{eventName}" )
+	@ApiOperation( "/{eventName}/taps" )
 	public List<Beer> getEventTaps( @PathParam( "eventName" ) String eventName,
 									@QueryParam( "brewery" ) String brewery );
 	
 	@GET
-	@Path( "/breweries/{eventName}")
+	@Path( "/{eventName}/breweries")
 	@Produces( MediaType.APPLICATION_JSON )
-	@ApiOperation( "/breweries/{eventName}" )
+	@ApiOperation( "/{eventName}/breweries/" )
 	public List<String> getEventBreweries( @PathParam( "eventName" ) String eventName );
 }

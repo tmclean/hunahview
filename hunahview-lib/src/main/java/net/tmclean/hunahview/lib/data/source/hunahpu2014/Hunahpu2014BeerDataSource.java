@@ -1,27 +1,38 @@
 package net.tmclean.hunahview.lib.data.source.hunahpu2014;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Properties;
+
+import com.google.common.base.Preconditions;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
 import net.tmclean.hunahview.lib.data.source.BeerDataSource;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
+import net.tmclean.hunahview.lib.data.source.google.spreadsheets.GoogleException;
 import net.tmclean.hunahview.lib.data.source.google.spreadsheets.GoogleSpreadsheetsExporter;
 
 public class Hunahpu2014BeerDataSource extends GoogleSpreadsheetsExporter implements BeerDataSource
-{
+{	
 	private static final String HUNAHPU_TAP_LIST_ID = "0Auhv_-iTf6vpdFA2bUxNbkFjMi1Bem5raEd6Y1dYVGc";
 	
-	public Hunahpu2014BeerDataSource( File pkcs12File, String clientId, String appName ) throws GeneralSecurityException, IOException 
-	{
-		super( pkcs12File, clientId, appName );
-	}
-
 	@Override
-	public List<Beer> read() throws BeerDataSourceException
+	public void configure( Properties properties ) throws BeerDataSourceException 
+	{
+		Preconditions.checkNotNull( properties );
+		
+		try 
+		{
+			super.configure( properties );
+		} 
+		catch( GoogleException e )
+		{
+			throw new BeerDataSourceException( "Error configuring Hunapu's Day 2014 Beer Data Source", e );
+		}
+	}
+	
+	@Override
+	public List<Beer> get() throws BeerDataSourceException
 	{
 		try
 		{

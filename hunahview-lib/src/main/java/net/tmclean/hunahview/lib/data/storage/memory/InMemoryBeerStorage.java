@@ -1,17 +1,22 @@
 package net.tmclean.hunahview.lib.data.storage.memory;
 
 import java.util.List;
+import java.util.Properties;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
 import net.tmclean.hunahview.lib.data.storage.BeerStorage;
+import net.tmclean.hunahview.lib.data.storage.BeerStorageException;
 
 public class InMemoryBeerStorage implements BeerStorage
 {
 	private Object lock = new Object();
 	private List<Beer> cache = Lists.newArrayListWithCapacity( 0 );
+	
+	@Override
+	public void configure(Properties properties) throws BeerStorageException {}
 	
 	@Override
 	public List<Beer> getBeers() 

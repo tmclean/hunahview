@@ -8,8 +8,17 @@
 		<param-value>WEB-INF/services.xml</param-value>
 	</context-param>
 
+	<context-param>
+		<param-name>net.tmclean.hunahview.server.app.config</param-name>
+		<param-value>WEB-INF/appConfig.properties</param-value>
+	</context-param>
+
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<listener>
+		<listener-class>net.tmclean.hunahview.servlet.HunahViewDataSourceServletListner</listener-class>
 	</listener>
 
 	<servlet>
