@@ -1,16 +1,61 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
-	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
 	xsi:schemaLocation="
          http://www.springframework.org/schema/beans
          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+         http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
          http://cxf.apache.org/jaxrs
          http://cxf.apache.org/schemas/jaxrs.xsd">
-         
-	<jaxrs:server id="eventListRest" serviceClass="net.tmclean.hunahview.rest.impl.EventListImpl" address="/">
-		<jaxrs:providers>
-			<bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
-		</jaxrs:providers>
-	</jaxrs:server>
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+
+	<cxf:bus>
+		<cxf:features>
+			<cxf:logging />
+		</cxf:features>
+	</cxf:bus>
+  
+	<!-- Swagger writers -->
+	<bean id="resourceWriter" class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" />
+	<bean id="apiWriter" class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" />
+
+	<!-- JSON mapper -->
+	<bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
+
+	<!-- Application resources -->
+	<bean id="hunahpuResource" class="net.tmclean.hunahview.rest.impl.HunahviewAPIServerImpl" />
+
+	<!-- Swagger API listing resource -->
+	<bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON" />
+
+	<bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig">
+		<property name="resourcePackage" value="net.tmclean.hunahview" />
+		<property name="version" value="1.0.0" />
+		<property name="basePath" value="/" />
+		<property name="title" value="Hunahview REST API" />
+		<property name="description" value="Swagger API documentation for Hunahview" />
+		<property name="contact" value="tjrage19@gmai.com" />
+		<property name="scan" value="true" />
+	</bean>
+	
+	<bean class="org.apache.cxf.jaxrs.JAXRSServerFactoryBean" init-method="create">
+		<property name="address" value="/"/>
+		<property name="serviceBeans">
+			<list>
+				<ref bean="swaggerResourceJSON"/>
+				<ref bean="hunahpuResource"/>
+			</list>
+		</property>
+		<property name="providers">
+			<list>
+				<ref bean="jsonProvider"/>
+				
+				<!-- required for writing swagger classes -->
+				<ref bean="resourceWriter"/>
+				<ref bean="apiWriter"/>
+			</list>
+		</property>
+	</bean>
 
 </beans>
