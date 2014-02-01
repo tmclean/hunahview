@@ -13,6 +13,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
+import net.tmclean.hunahview.lib.data.model.Location;
 
 @Path( "/api" )
 @Api(value = "/api", description = "API for event tap lists and breweries" )
@@ -23,6 +24,12 @@ public interface HunahviewAPI
 	@Produces( MediaType.APPLICATION_JSON )
 	@ApiOperation( "/events" )
 	public List<String> getEvents();
+
+	@GET
+	@Path( "/{eventName}/locations")
+	@Produces( MediaType.APPLICATION_JSON )
+	@ApiOperation( "/{eventName}/locations/" )
+	public List<Location> getEventLocations( @PathParam( "eventName" ) String eventName );
 	
 	@GET
 	@Path( "/{eventName}/taps")

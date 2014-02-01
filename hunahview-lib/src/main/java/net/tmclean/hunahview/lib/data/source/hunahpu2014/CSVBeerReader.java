@@ -34,13 +34,13 @@ public final class CSVBeerReader
 		
 		List<Beer> beers = Lists.newArrayList();
 		
-		Beer beer = null;
+		Hunahpu2014Beer beer = null;
 		do
 		{
 			beer = reader.read( Hunahpu2014Beer.class, "New", "Brewery", "Beer", "BeerNotes", "BreweryLocation" );
 			
 			if( beer != null )
-				beers.add( new Beer( beer ) );
+				beers.add( NormalizationUtils.noramlize( beer ) );
 		}
 		while( beer != null );
 		
