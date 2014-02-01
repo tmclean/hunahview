@@ -1,6 +1,7 @@
-package net.tmclean.hunahview.lib;
+package net.tmclean.hunahview.lib.data.model;
 
 import com.google.api.client.util.Strings;
+import com.google.common.base.Preconditions;
 
 public class Beer 
 {	
@@ -9,6 +10,19 @@ public class Beer
 	private String brewery = null;
 	private String beerNotes = null;
 	private String breweryLocation = null;
+	
+	public Beer() {}
+	
+	public Beer( Beer beer )
+	{
+		Preconditions.checkNotNull( beer );
+		
+		this.New = beer.getNew();
+		this.beer = beer.getBeer();
+		this.brewery = beer.getBrewery();
+		this.beerNotes = beer.getBeerNotes();
+		this.breweryLocation = beer.getBreweryLocation();
+	}
 	
 	public boolean isNew() { return !Strings.isNullOrEmpty( New ); }
 	

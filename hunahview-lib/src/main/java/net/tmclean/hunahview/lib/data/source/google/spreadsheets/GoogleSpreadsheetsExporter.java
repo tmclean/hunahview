@@ -1,4 +1,4 @@
-package net.tmclean.hunahview.lib;
+package net.tmclean.hunahview.lib.data.source.google.spreadsheets;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Set;
+
+import net.tmclean.hunahview.lib.data.source.hunahpu2014.ExportFormats;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -25,7 +27,6 @@ import com.google.common.io.Closer;
 
 public class GoogleSpreadsheetsExporter 
 {
-	private static final String APPLICATION_NAME  = "HunahViewTest/0.0.1";
 	private static final Set<String> CLIENT_SCOPES = Collections.singleton( DriveScopes.DRIVE_FILE );
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -38,7 +39,7 @@ public class GoogleSpreadsheetsExporter
 	
 	private Drive drive = null;
 	
-	public GoogleSpreadsheetsExporter( java.io.File pkcs12File, String clientId ) throws GeneralSecurityException, IOException  
+	public GoogleSpreadsheetsExporter( java.io.File pkcs12File, String clientId, String appName ) throws GeneralSecurityException, IOException  
 	{
 		this.pkcs12File = pkcs12File;
 		this.clientId = clientId;
@@ -47,9 +48,7 @@ public class GoogleSpreadsheetsExporter
 		
 		Credential credential = authorizeService();
 
-		drive = new Drive.Builder( httpTransport, JSON_FACTORY, credential )
-		                 .setApplicationName( APPLICATION_NAME )
-		                 .build();
+		drive = new Drive.Builder( httpTransport, JSON_FACTORY, credential ).setApplicationName( appName ).build();
 	}
 	
 	public java.io.File exportToFile( String id, ExportFormats format, java.io.File file ) throws IOException 

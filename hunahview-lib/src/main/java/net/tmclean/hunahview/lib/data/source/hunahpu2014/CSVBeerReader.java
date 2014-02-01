@@ -1,17 +1,21 @@
-package net.tmclean.hunahview.lib;
+package net.tmclean.hunahview.lib.data.source.hunahpu2014;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import net.tmclean.hunahview.lib.data.model.Beer;
+
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
 import com.google.common.collect.Lists;
 
-public class CSVBeerReader 
+public final class CSVBeerReader 
 {
+	private CSVBeerReader(){}
+	
 	public static final List<Beer> readFromInputStream( InputStream is ) throws IOException
 	{
 		CsvPreference preferences = CsvPreference.STANDARD_PREFERENCE;

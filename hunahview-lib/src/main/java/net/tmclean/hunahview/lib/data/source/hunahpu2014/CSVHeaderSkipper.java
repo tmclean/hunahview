@@ -1,4 +1,4 @@
-package net.tmclean.hunahview.lib;
+package net.tmclean.hunahview.lib.data.source.hunahpu2014;
 
 import java.io.IOException;
 import java.io.Reader;
