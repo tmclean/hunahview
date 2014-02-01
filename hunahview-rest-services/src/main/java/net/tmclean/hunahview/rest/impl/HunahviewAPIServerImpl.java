@@ -45,10 +45,16 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 				
 				for( Beer beer : beers )
 				{
-					if( beer.getBrewery() != null && beer.getBrewery().equalsIgnoreCase( brewery ) )
+					if( beer.getBreweries() != null )
 					{
-						System.out.println( "Matched beer" );
-						filteredBeers.add( beer );
+						for( String b : beer.getBreweries() )
+						{
+							if( b.equalsIgnoreCase( brewery ) )
+							{
+								System.out.println( "Matched beer" );
+								filteredBeers.add( beer );
+							}
+						}
 					}
 				}
 				
@@ -78,8 +84,14 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 			List<String> breweries = Lists.newArrayList();
 			for( Beer beer : beers )
 			{
-				if( !breweries.contains( beer.getBrewery() ) )
-					breweries.add( beer.getBrewery() );
+				if( beer.getBreweries() != null )
+				{
+					for( String b : beer.getBreweries() )
+					{
+						if( !breweries.contains( b ) )
+							breweries.add( b );
+					}
+				}
 			}
 			
 			return breweries;

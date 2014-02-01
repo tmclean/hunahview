@@ -1,13 +1,13 @@
 package net.tmclean.hunahview.lib.data.model;
 
-import com.google.api.client.util.Strings;
+import java.util.List;
+
 import com.google.common.base.Preconditions;
 
 public class Beer 
 {	
-	private String New = null;
 	private String beer = null;
-	private String brewery = null;
+	private List<String> breweries = null;
 	private String beerNotes = null;
 	private String breweryLocation = null;
 	
@@ -17,24 +17,19 @@ public class Beer
 	{
 		Preconditions.checkNotNull( beer );
 		
-		this.New = beer.getNew();
 		this.beer = beer.getBeer();
-		this.brewery = beer.getBrewery();
+		this.breweries = beer.getBreweries();
 		this.beerNotes = beer.getBeerNotes();
 		this.breweryLocation = beer.getBreweryLocation();
 	}
 
-	public boolean checkNew() { return !Strings.isNullOrEmpty( New ); }
-	
-	public String getNew() { return New; }
-	public void setNew(String new1) { New = new1; }
 
 	public String getBeer() { return beer; }
 	public void setBeer(String beer) { this.beer = beer; }
-
-	public String getBrewery() { return brewery; }
-	public void setBrewery(String brewery) { this.brewery = brewery; }
 	
+	public List<String> getBreweries() { return breweries; }
+	public void setBreweries(List<String> breweries) { this.breweries = breweries; }
+
 	public String getBeerNotes() { return beerNotes; }
 	public void setBeerNotes(String beerNotes) { this.beerNotes = beerNotes; }
 
