@@ -3,6 +3,7 @@ package net.tmclean.hunahview.rest.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
@@ -19,11 +20,11 @@ import net.tmclean.hunahview.servlet.HunahViewDataSourceServletListner;
 
 public class HunahviewAPIServerImpl implements HunahviewAPI 
 {
-	@Context HttpServletRequest httpRequest;
+	@Context ServletContext ctx;
 	
 	private EventRegistry getEventRegistry()
 	{
-		return (EventRegistry)httpRequest.getSession().getServletContext().getAttribute( HunahViewDataSourceServletListner.EVENT_REGISTRY_KEY );
+		return (EventRegistry)ctx.getAttribute( HunahViewDataSourceServletListner.EVENT_REGISTRY_KEY );
 	}
 	
 	@Override
@@ -81,10 +82,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 						for( String b : beer.getBreweries() )
 						{
 							if( b.equalsIgnoreCase( brewery ) )
-							{
-								System.out.println( "Matched beer" );
 								filteredBeers.add( beer );
-							}
 						}
 					}
 				}
