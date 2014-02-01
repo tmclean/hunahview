@@ -23,8 +23,8 @@ public class Beer
 		this.beerNotes = beer.getBeerNotes();
 		this.breweryLocation = beer.getBreweryLocation();
 	}
-	
-	public boolean isNew() { return !Strings.isNullOrEmpty( New ); }
+
+	public boolean checkNew() { return !Strings.isNullOrEmpty( New ); }
 	
 	public String getNew() { return New; }
 	public void setNew(String new1) { New = new1; }
