@@ -45,7 +45,7 @@ public class PollingBeerDataSource implements BeerDataSource
 			storage = (BeerStorage)Class.forName( storageClassName ).newInstance();
 			storage.configure( properties );
 			
-			PollingBeerDataSourceTimerTask task = new PollingBeerDataSourceTimerTask();
+			PollingBeerDataSourceTimerTask task = new PollingBeerDataSourceTimerTask( source, storage );
 			timer.scheduleAtFixedRate( task, 0, Long.parseLong( delayString ) );
 		} 
 		catch( InstantiationException | IllegalAccessException | ClassNotFoundException | BeerStorageException e ) 
@@ -67,11 +67,25 @@ public class PollingBeerDataSource implements BeerDataSource
 		source.shutdown();
 	}
 	
-	private class PollingBeerDataSourceTimerTask extends TimerTask
+	public static class PollingBeerDataSourceTimerTask extends TimerTask
 	{	
+		private BeerDataSource source = null;
+		private BeerStorage storage = null;
+		private ClassLoader classloader = null;
+
+		public PollingBeerDataSourceTimerTask( BeerDataSource source, BeerStorage storage )
+		{
+			this.classloader = this.getClass().getClassLoader();
+			
+			this.source = source;
+			this.storage = storage;
+		}
+		
 		@Override
 		public void run() 
 		{
+			Thread.currentThread().setContextClassLoader( classloader );
+			
 			synchronized( BEER_SOURCE_PREFIX ) 
 			{
 				try 

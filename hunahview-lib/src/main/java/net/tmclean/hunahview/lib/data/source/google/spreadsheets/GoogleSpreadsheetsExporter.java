@@ -58,9 +58,12 @@ public class GoogleSpreadsheetsExporter
 		Preconditions.checkArgument( !Strings.isNullOrEmpty( clientId ) );
 		Preconditions.checkArgument( !Strings.isNullOrEmpty( certFile ) );
 		
+		System.out.println( certFile );
+		
 		File cert = new File( certFile );
 		
-		Preconditions.checkArgument( cert.exists() && cert.canRead() );
+		Preconditions.checkArgument( cert.exists() );
+		Preconditions.checkArgument( cert.canRead() );
 		
 		try
 		{
