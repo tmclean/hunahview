@@ -20,6 +20,10 @@
 	<listener>
 		<listener-class>net.tmclean.hunahview.servlet.HunahViewDataSourceServletListner</listener-class>
 	</listener>
+	
+	<listener>
+		<listener-class>net.tmclean.hunahview.servlet.Log4JInitListener</listener-class>
+	</listener>
 
 	<servlet>
 		<servlet-name>CXFServlet</servlet-name>

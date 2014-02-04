@@ -90,9 +90,7 @@ public class PollingBeerDataSource implements BeerDataSource
 			{
 				try 
 				{
-					System.out.println( "Reading beer" );
 					List<Beer> newBeerList = source.get();
-					System.out.println( "Read " + newBeerList.size() + " beers" );
 					storage.pushNewBeerList( newBeerList );
 				}
 				catch( BeerDataSourceException e ) 

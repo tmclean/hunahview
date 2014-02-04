@@ -2,6 +2,9 @@ package net.tmclean.hunahview.lib.data.storage.memory;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -18,9 +21,12 @@ public class InMemoryBeerStorage implements BeerStorage
 	@Override
 	public void configure( ContextAwareProperties properties ) throws BeerStorageException {}
 	
+	private Logger logger = LoggerFactory.getLogger( this.getClass() );
+	
 	@Override
 	public List<Beer> getBeers() 
 	{
+		logger.debug( "Getting beers" );
 		synchronized( lock ) 
 		{
 			ImmutableList.Builder<Beer> safeBeersBuilder = ImmutableList.builder();
@@ -35,6 +41,8 @@ public class InMemoryBeerStorage implements BeerStorage
 	@Override
 	public void pushNewBeerList( List<Beer> beers ) 
 	{	
+		logger.debug( "Pushing new beer list" );
+		
 		synchronized( lock ) 
 		{
 			this.cache = Lists.newArrayListWithCapacity( beers.size() );

@@ -32,4 +32,19 @@ public class Hunahpu2014Beer extends Beer
 
 	public String getBreweryLocation() { return breweryLocation; }
 	public void setBreweryLocation(String breweryLocation) { this.breweryLocation = breweryLocation; }
+	
+	@Override
+	public String toString() 
+	{
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append( "[ New: " ).append( New )
+			   .append( ", Beer: "  ).append( this.getBeer() )
+			   .append( ", Beer Notes: " ).append( this.getBeerNotes() )
+			   .append( ", Brewery: " ).append( this.getBrewery() )
+			   .append( ", Brewery Location:" ).append( this.getBreweryLocation() )
+			   .append( " ]" );
+							 
+		return builder.toString();
+	}
 }

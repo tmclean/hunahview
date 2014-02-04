@@ -11,6 +11,9 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.tmclean.hunahview.lib.config.ContextAwareProperties;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
 import net.tmclean.hunahview.lib.data.source.hunahpu2014.ExportFormats;
@@ -44,6 +47,8 @@ public class GoogleSpreadsheetsExporter
 
 	private static HttpTransport httpTransport = null;
 	
+	private Logger logger = LoggerFactory.getLogger( this.getClass() );
+	
 	private Drive drive = null;
 	
 	public void configure( ContextAwareProperties properties ) throws BeerDataSourceException, GoogleException 
@@ -54,16 +59,21 @@ public class GoogleSpreadsheetsExporter
 		String clientId = properties.getProperty( GOOGLE_CLIENT_ID );
 		String certFile = properties.getProperty( GOOGLE_CERT_FILE );
 		
+		logger.info( "Configuring {}: appName:  {}",  properties.getContext(), appName  );
+		logger.info( "Configuring {}: clientId: {}", properties.getContext(), clientId );
+		logger.info( "Configuring {}: certFile: {}", properties.getContext(), certFile );
+		
 		Preconditions.checkArgument( !Strings.isNullOrEmpty( appName ) );
 		Preconditions.checkArgument( !Strings.isNullOrEmpty( clientId ) );
 		Preconditions.checkArgument( !Strings.isNullOrEmpty( certFile ) );
 		
-		System.out.println( certFile );
-		
 		File cert = new File( certFile );
 		
 		Preconditions.checkArgument( cert.exists() );
+		logger.info( "{} certFile {} exists", properties.getContext(), certFile );
+		
 		Preconditions.checkArgument( cert.canRead() );
+		logger.info( "{} certFile {} is readable", properties.getContext(), certFile );
 		
 		try
 		{
@@ -81,13 +91,17 @@ public class GoogleSpreadsheetsExporter
 	
 	public File exportToFile( String id, ExportFormats format, File file ) throws IOException 
 	{
-		InputStream is = downloadTapList( id, format );
+		logger.debug( "Exporting spreadsheet {} to {}", id, file.getAbsolutePath() );
+		
+		InputStream is = download( id, format );
+		
 		return dumpStreamToFile( is, file );
 	}
 	
 	public InputStream exportToStream( String id, ExportFormats format ) throws IOException 
 	{
-		return downloadTapList( id, format );
+		logger.debug( "Exporting spreadsheet {} to stream", id );
+		return download( id, format );
 	}
 	
 	private Credential authorizeService( String clientId, File cert ) throws GeneralSecurityException, IOException  
@@ -101,8 +115,10 @@ public class GoogleSpreadsheetsExporter
 								   .build();
 	}
 	
-	private InputStream downloadTapList( String id, ExportFormats format ) throws IOException 
+	private InputStream download( String id, ExportFormats format ) throws IOException 
 	{
+		logger.debug( "Downloading spreadsheet {} as {}", id, format.toString() );
+		
 		String exportUrl = String.format( SPREADSHEET_EXPORT_FMT, id, format );
 		
 		HttpRequest dlReq = drive.getRequestFactory().buildGetRequest( new GenericUrl( exportUrl ) );

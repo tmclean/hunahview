@@ -32,4 +32,6 @@ public class ContextAwareProperties
 		
 		return context + "." + key;
 	}
+	
+	public String getContext(){ return this.context; };
 }
