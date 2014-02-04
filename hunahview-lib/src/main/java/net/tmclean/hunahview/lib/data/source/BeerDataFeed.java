@@ -5,7 +5,7 @@ import java.util.List;
 import net.tmclean.hunahview.lib.config.ContextAwareProperties;
 import net.tmclean.hunahview.lib.data.model.Beer;
 
-public interface BeerDataSource 
+public interface BeerDataFeed 
 {
 	public static final String BEER_SOURCE_PREFIX = "data.source";
 	

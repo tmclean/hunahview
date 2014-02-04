@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import net.tmclean.hunahview.lib.data.model.Beer;
 import net.tmclean.hunahview.lib.data.model.Brewery;
 import net.tmclean.hunahview.lib.data.model.Location;
-import net.tmclean.hunahview.lib.data.source.BeerDataSource;
+import net.tmclean.hunahview.lib.data.source.BeerDataFeed;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
 import net.tmclean.hunahview.lib.event.EventRegistry;
 import net.tmclean.hunahview.rest.api.HunahviewAPI;
@@ -39,7 +39,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 		
 		try 
 		{
-			BeerDataSource source = getEventRegistry().getEvent( eventName ).getDataSource();
+			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
 			List<Beer> beers = source.get();
 			
 			for( Beer beer : beers )
@@ -69,7 +69,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 		
 		try 
 		{
-			BeerDataSource source = getEventRegistry().getEvent( eventName ).getDataSource();
+			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
 			List<Beer> sourceBeers = source.get();
 			
 			for( Beer beer : sourceBeers )
@@ -102,7 +102,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 		
 		try 
 		{
-			BeerDataSource source = getEventRegistry().getEvent( eventName ).getDataSource();
+			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
 			List<Beer> sourceBeers = source.get();
 			
 			if( !Strings.isNullOrEmpty( brewery ) )
@@ -146,7 +146,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 		
 		try
 		{
-			BeerDataSource source = getEventRegistry().getEvent( eventName ).getDataSource();
+			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
 			List<Beer> beers = source.get();
 
 			for( Beer beer : beers )

@@ -9,12 +9,12 @@ import com.google.common.base.Preconditions;
 
 import net.tmclean.hunahview.lib.config.ContextAwareProperties;
 import net.tmclean.hunahview.lib.data.model.Beer;
-import net.tmclean.hunahview.lib.data.source.BeerDataSource;
+import net.tmclean.hunahview.lib.data.source.BeerDataFeed;
 import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
 import net.tmclean.hunahview.lib.data.storage.BeerStorage;
 import net.tmclean.hunahview.lib.data.storage.BeerStorageException;
 
-public class PollingBeerDataSource implements BeerDataSource
+public class PollingBeerDataSource implements BeerDataFeed
 {
 	public static final String BEER_POLLING_SOURCE_PREFIX = BEER_SOURCE_PREFIX + ".polling";
 	
@@ -23,7 +23,7 @@ public class PollingBeerDataSource implements BeerDataSource
 	public static final String DATA_POLL_DELAY    = BEER_POLLING_SOURCE_PREFIX + ".delay";
 	
 	private Timer timer = new Timer();
-	private BeerDataSource source = null;
+	private BeerDataFeed source = null;
 	private BeerStorage storage = null;
 
 	@Override
@@ -39,7 +39,7 @@ public class PollingBeerDataSource implements BeerDataSource
 		
 		try
 		{
-			source = (BeerDataSource)Class.forName( sourceClassName ).newInstance();
+			source = (BeerDataFeed)Class.forName( sourceClassName ).newInstance();
 			source.configure( properties );
 			
 			storage = (BeerStorage)Class.forName( storageClassName ).newInstance();
@@ -69,11 +69,11 @@ public class PollingBeerDataSource implements BeerDataSource
 	
 	public static class PollingBeerDataSourceTimerTask extends TimerTask
 	{	
-		private BeerDataSource source = null;
+		private BeerDataFeed source = null;
 		private BeerStorage storage = null;
 		private ClassLoader classloader = null;
 
-		public PollingBeerDataSourceTimerTask( BeerDataSource source, BeerStorage storage )
+		public PollingBeerDataSourceTimerTask( BeerDataFeed source, BeerStorage storage )
 		{
 			this.classloader = this.getClass().getClassLoader();
 			
