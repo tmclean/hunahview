@@ -54,12 +54,12 @@ public class SetUsernameListener implements DialogInterface.OnClickListener
 				hv.deleteFile( Hunahview.USERNAME_FILE );
 				
 				fout = hv.openFileOutput( Hunahview.USERNAME_FILE, Context.MODE_PRIVATE );
-				fout.write( input.getText().toString().getBytes( Charset.forName( "UTF-8" ) ) );
+				fout.write( input.getText().toString().trim().getBytes( Charset.forName( "UTF-8" ) ) );
 				fout.close();
 				
 				hv.setUsername( username );
-				
-				input.getText().clear();
+			
+				hv.readUsername();
 				
 				hv.reloadApp();
 			}

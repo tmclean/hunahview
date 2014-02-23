@@ -60,10 +60,13 @@ public class Hunahview extends CordovaActivity
 	private String username = null;
 	
 	public Hunahview() {}
-	
-    @Override
+
+	@Override
+    @SuppressWarnings("deprecation")
     public void onCreate( Bundle savedInstanceState )
     {
+    	super.setIntegerProperty( "splashscreen", R.drawable.screen );
+    	
         super.onCreate( savedInstanceState );
         super.init();
         
@@ -73,8 +76,6 @@ public class Hunahview extends CordovaActivity
 		{
 			mode = DEV;
 		}
-
-		ensureUsername();
 		
 		try { username = readUsername(); } catch( IOException e ) {}
 		
@@ -88,11 +89,12 @@ public class Hunahview extends CordovaActivity
 		builder.setPositiveButton( "Set", new SetUsernameListener( this, usernameInput ) );
 		builder.setNegativeButton( "Cancel", new CancelListener() );
 		setUsernameDialog = builder.create();
+
+		ensureUsername();
     }
     
     private void ensureUsername()
     {
-
 		try
 		{
 			username = readUsername();

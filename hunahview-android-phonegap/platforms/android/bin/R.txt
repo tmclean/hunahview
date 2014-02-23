@@ -1,4 +1,5 @@
 int drawable icon 0x7f020000
+int drawable screen 0x7f020001
 int id refresh 0x7f050001
 int id setName 0x7f050000
 int string app_name 0x7f040000
