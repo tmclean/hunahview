@@ -1,11 +1,13 @@
 package net.tmclean.hunahview.lib.data.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.google.common.base.Preconditions;
 
 public class Beer 
 {	
+	private String beerId = UUID.randomUUID().toString();
 	private String beer = null;
 	private List<Brewery> breweries = null;
 	private String beerNotes = null;
@@ -29,4 +31,7 @@ public class Beer
 
 	public String getBeerNotes() { return beerNotes; }
 	public void setBeerNotes(String beerNotes) { this.beerNotes = beerNotes; }
+
+	public String getBeerId() { return beerId; }
+	public void setBeerId(String beerId) { this.beerId = beerId; }
 }

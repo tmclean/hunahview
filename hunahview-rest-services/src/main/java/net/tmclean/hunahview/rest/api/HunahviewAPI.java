@@ -3,6 +3,7 @@ package net.tmclean.hunahview.rest.api;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,6 +15,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
 import net.tmclean.hunahview.lib.data.model.Brewery;
+import net.tmclean.hunahview.lib.data.model.Checkin;
 import net.tmclean.hunahview.lib.data.model.Location;
 
 @Path( "/api" )
@@ -51,4 +53,19 @@ public interface HunahviewAPI
 	@Produces( MediaType.APPLICATION_JSON )
 	@ApiOperation( "/{eventName}/breweries/" )
 	public List<Brewery> getEventBreweries( @PathParam( "eventName" ) String eventName );
+	
+	@POST
+	@Path( "/{eventName}/{beerId}/checkin" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@ApiOperation( "/{eventName}/checkin" )
+	public Checkin checkin( @PathParam( "eventName" ) String eventName, 
+						    @PathParam( "beerId" ) String beerId,
+						    @QueryParam( "username" ) String username );
+	
+	@GET
+	@Path( "/{eventName}/myCheckins" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@ApiOperation( "/{eventName}/myCheckins" )
+	public List<Checkin> myCheckins( @PathParam( "eventName" ) String eventName, 
+									 @QueryParam( "username" ) String username );
 }

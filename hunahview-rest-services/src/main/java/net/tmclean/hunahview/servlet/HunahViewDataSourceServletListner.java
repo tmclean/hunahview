@@ -1,60 +1,47 @@
 package net.tmclean.hunahview.servlet;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import java.net.UnknownHostException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import net.tmclean.hunahview.lib.event.EventRegistry;
-
-import com.google.api.client.util.Strings;
-import com.google.common.base.Preconditions;
+import com.mongodb.DB;
+import com.mongodb.Mongo;
+import com.mongodb.MongoURI;
 
 public class HunahViewDataSourceServletListner implements ServletContextListener
 {
+	private static final String MONGO_URI = "mongodb://ds033639.mongolab.com:33639/hunahview";
+	
 	public static final String EVENT_REGISTRY_KEY = "net.tmclean.hunahview.server.event.registry";
 	
 	public static final String CONFIG_FILE_KEY = "net.tmclean.hunahview.server.app.config";
+	
+	public static final String DB_KEY = "net.tmclean.hunahview.server.db";
 
+	private Mongo mongo = null;
+	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void contextInitialized( ServletContextEvent event ) 
 	{
-		String configFilePath = (String)event.getServletContext().getInitParameter( CONFIG_FILE_KEY );
-		
-		if( !Strings.isNullOrEmpty( configFilePath ) )
+		try 
 		{
-			try 
-			{
-				File configFile = new File( event.getServletContext().getRealPath( configFilePath ) );
-				Preconditions.checkArgument( configFile.exists() && configFile.canRead() );
-				
-				Properties properties = new Properties();
-				properties.load( new FileReader( configFile ) );
-				
-				String eventsStr = properties.getProperty( "net.tmclean.hunahview.events" );
-				
-				Preconditions.checkArgument( !Strings.isNullOrEmpty( eventsStr ) );
-				
-				EventRegistry registry = new EventRegistry( properties );
-				
-				event.getServletContext().setAttribute( EVENT_REGISTRY_KEY, registry );
-			} 
-			catch( IOException e ) 
-			{
-				e.printStackTrace();
-			}
+			mongo = new Mongo( new MongoURI( MONGO_URI ) );
+			DB mongoDB = mongo.getDB( "hunahview" );
+			mongoDB.authenticate( System.getProperty( "mongoUser" ), System.getProperty( "mongoPass" ).toCharArray() );
+			
+			event.getServletContext().setAttribute( DB_KEY, mongoDB );
+		}
+		catch( UnknownHostException e ) 
+		{
+			e.printStackTrace();
 		}
 	}
 	
 	@Override
 	public void contextDestroyed( ServletContextEvent event )  
 	{
-		EventRegistry registry = (EventRegistry)event.getServletContext().getAttribute( EVENT_REGISTRY_KEY ); 
-		
-		if( registry != null )
-			registry.shutdown();
+		mongo.close();
 	}
 }

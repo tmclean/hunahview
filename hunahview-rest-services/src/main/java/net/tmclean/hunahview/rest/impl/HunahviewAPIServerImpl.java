@@ -5,15 +5,22 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 
+import org.mongodb.morphia.Morphia;
+
 import com.google.api.client.util.Strings;
 import com.google.common.collect.Lists;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
+import net.tmclean.hunahview.lib.data.model.BeerDirectory;
 import net.tmclean.hunahview.lib.data.model.Brewery;
+import net.tmclean.hunahview.lib.data.model.Checkin;
+import net.tmclean.hunahview.lib.data.model.CurrentBeerDirectory;
 import net.tmclean.hunahview.lib.data.model.Location;
-import net.tmclean.hunahview.lib.data.source.BeerDataFeed;
-import net.tmclean.hunahview.lib.data.source.BeerDataSourceException;
-import net.tmclean.hunahview.lib.event.EventRegistry;
 import net.tmclean.hunahview.rest.api.HunahviewAPI;
 import net.tmclean.hunahview.servlet.HunahViewDataSourceServletListner;
 
@@ -21,15 +28,37 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 {
 	@Context ServletContext ctx;
 	
-	private EventRegistry getEventRegistry()
+	private List<Beer> getEventBeers( String eventId )
 	{
-		return (EventRegistry)ctx.getAttribute( HunahViewDataSourceServletListner.EVENT_REGISTRY_KEY );
+		DB mongoDB = (DB)ctx.getAttribute( HunahViewDataSourceServletListner.DB_KEY );
+		Morphia morphia = new Morphia();
+		morphia.map( BeerDirectory.class );
+		
+		DBCollection directories = mongoDB.getCollection( "hunahview_directories" );
+		
+		BasicDBObject findObj = new BasicDBObject( "dirId", eventId );
+		DBObject dirObj = directories.findOne( findObj );
+		
+		BeerDirectory currentDir = morphia.fromDBObject( BeerDirectory.class, dirObj );
+		return currentDir.getBeers();
 	}
 	
 	@Override
 	public List<String> getEvents() 
 	{
-		return getEventRegistry().getEventNames();
+		DB mongoDB = (DB)ctx.getAttribute( HunahViewDataSourceServletListner.DB_KEY );
+		Morphia morphia = new Morphia();
+		morphia.map( CurrentBeerDirectory.class );
+		
+		DBCollection index = mongoDB.getCollection( "hunahview_index" );
+		
+		DBObject obj = index.findOne();
+		
+		CurrentBeerDirectory dir = morphia.fromDBObject( CurrentBeerDirectory.class, obj );
+		
+		List<String> ids = Lists.newArrayListWithCapacity( 1 );
+		ids.add( dir.getDirId() );
+		return ids;
 	}
 	
 	@Override
@@ -37,26 +66,18 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 	{
 		List<Location> locations = Lists.newArrayListWithCapacity( 0 );
 		
-		try 
+		List<Beer> beers = getEventBeers( eventName );
+		
+		for( Beer beer : beers )
 		{
-			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
-			List<Beer> beers = source.get();
-			
-			for( Beer beer : beers )
+			if( beer.getBreweries() != null )
 			{
-				if( beer.getBreweries() != null )
+				for( Brewery brewery : beer.getBreweries() )
 				{
-					for( Brewery brewery : beer.getBreweries() )
-					{
-						if( !locations.contains( brewery.getLocation() ) )
-							locations.add( brewery.getLocation() );
-					}
+					if( !locations.contains( brewery.getLocation() ) )
+						locations.add( brewery.getLocation() );
 				}
 			}
-		}
-		catch( BeerDataSourceException e ) 
-		{
-			e.printStackTrace();
 		}
 		
 		return locations;
@@ -67,29 +88,21 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 	{
 		List<Beer> beers = Lists.newArrayList();
 		
-		try 
+		List<Beer> sourceBeers = getEventBeers( eventName );
+		
+		for( Beer beer : sourceBeers )
 		{
-			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
-			List<Beer> sourceBeers = source.get();
-			
-			for( Beer beer : sourceBeers )
+			if( beer.getBreweries() != null )
 			{
-				if( beer.getBreweries() != null )
+				for( Brewery brewery : beer.getBreweries() )
 				{
-					for( Brewery brewery : beer.getBreweries() )
+					if( brewery.getLocation() != null && brewery.getLocation().match( location ) )
 					{
-						if( brewery.getLocation() != null && brewery.getLocation().match( location ) )
-						{
-							beers.add( beer );
-							break;
-						}
+						beers.add( beer );
+						break;
 					}
 				}
 			}
-		}
-		catch( BeerDataSourceException e ) 
-		{
-			e.printStackTrace();
 		}
 		
 		return beers;
@@ -100,40 +113,32 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 	{
 		List<Beer> beers = Lists.newArrayList();
 		
-		try 
+		List<Beer> sourceBeers = getEventBeers( eventName );
+		
+		if( !Strings.isNullOrEmpty( brewery ) )
 		{
-			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
-			List<Beer> sourceBeers = source.get();
+			List<Beer> filteredBeers = Lists.newArrayList();
 			
-			if( !Strings.isNullOrEmpty( brewery ) )
+			for( Beer beer : sourceBeers )
 			{
-				List<Beer> filteredBeers = Lists.newArrayList();
-				
-				for( Beer beer : sourceBeers )
+				if( beer.getBreweries() != null )
 				{
-					if( beer.getBreweries() != null )
+					for( Brewery b : beer.getBreweries() )
 					{
-						for( Brewery b : beer.getBreweries() )
+						if( b.getName().equalsIgnoreCase( brewery ) )
 						{
-							if( b.getName().equalsIgnoreCase( brewery ) )
-							{
-								filteredBeers.add( beer );
-								break;
-							}
+							filteredBeers.add( beer );
+							break;
 						}
 					}
 				}
-				
-				beers = filteredBeers;
 			}
-			else
-			{
-				beers = sourceBeers;
-			}
+			
+			beers = filteredBeers;
 		}
-		catch( BeerDataSourceException e ) 
+		else
 		{
-			e.printStackTrace();
+			beers = sourceBeers;
 		}
 		
 		return beers;
@@ -144,28 +149,75 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 	{
 		List<Brewery> breweries = Lists.newArrayList();
 		
-		try
-		{
-			BeerDataFeed source = getEventRegistry().getEvent( eventName ).getDataSource();
-			List<Beer> beers = source.get();
+		List<Beer> sourceBeers = getEventBeers( eventName );
 
-			for( Beer beer : beers )
+		for( Beer beer : sourceBeers )
+		{
+			if( beer.getBreweries() != null )
 			{
-				if( beer.getBreweries() != null )
+				for( Brewery b : beer.getBreweries() )
 				{
-					for( Brewery b : beer.getBreweries() )
-					{
-						if( !breweries.contains( b ) )
-							breweries.add( b );
-					}
+					if( !breweries.contains( b ) )
+						breweries.add( b );
 				}
 			}
 		}
-		catch( BeerDataSourceException e ) 
-		{
-			e.printStackTrace();
-		}
 		
 		return breweries;
+	}
+	
+	@Override
+	public Checkin checkin( String eventName, String beerId, String username ) 
+	{
+		List<Checkin> myCheckins = myCheckins( eventName, username );
+		
+		for( Checkin myCheckin : myCheckins )
+		{
+			if( myCheckin.getBeerId().equals( beerId ) )
+			{
+				return myCheckin;
+			}
+		}
+		
+		DB mongoDB = (DB)ctx.getAttribute( HunahViewDataSourceServletListner.DB_KEY );
+		DBCollection hunahviewCheckins = mongoDB.getCollection( "hunahview_checkins" );
+		
+		Morphia morphia = new Morphia();
+		morphia.map( Checkin.class );
+		
+		Checkin checkin = new Checkin();
+		checkin.setEventId( eventName );
+		checkin.setBeerId( beerId );
+		checkin.setUsername( username );
+		
+		DBObject obj = morphia.toDBObject( checkin );
+		
+		hunahviewCheckins.insert( obj );
+		
+		return checkin;
+	}
+	
+	@Override
+	public List<Checkin> myCheckins( String eventName, String username ) 
+	{
+		DB mongoDB = (DB)ctx.getAttribute( HunahViewDataSourceServletListner.DB_KEY );
+		DBCollection hunahviewCheckins = mongoDB.getCollection( "hunahview_checkins" );
+		
+		Morphia morphia = new Morphia();
+		morphia.map( Checkin.class );
+		
+		BasicDBObject obj = new BasicDBObject( "eventId", eventName );
+		obj.put( "username", username );
+		DBCursor cursor = hunahviewCheckins.find( obj );
+		
+		List<Checkin> checkins = Lists.newArrayListWithCapacity( 0 );
+		while( cursor.hasNext() )
+		{
+			DBObject checkinObj = cursor.next();
+			Checkin checkin = morphia.fromDBObject( Checkin.class, checkinObj );
+			checkins.add( checkin );
+		}
+		
+		return checkins;
 	}
 }
