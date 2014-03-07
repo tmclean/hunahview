@@ -1,5 +1,6 @@
 package net.tmclean.hunahview.rest.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -7,7 +8,7 @@ import javax.ws.rs.core.Context;
 
 import org.mongodb.morphia.Morphia;
 
-import com.google.api.client.util.Strings;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -168,17 +169,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 	
 	@Override
 	public Checkin checkin( String eventName, String beerId, String username ) 
-	{
-		List<Checkin> myCheckins = myCheckins( eventName, username );
-		
-		for( Checkin myCheckin : myCheckins )
-		{
-			if( myCheckin.getBeerId().equals( beerId ) )
-			{
-				return myCheckin;
-			}
-		}
-		
+	{	
 		DB mongoDB = (DB)ctx.getAttribute( HunahViewDataSourceServletListner.DB_KEY );
 		DBCollection hunahviewCheckins = mongoDB.getCollection( "hunahview_checkins" );
 		
@@ -189,6 +180,7 @@ public class HunahviewAPIServerImpl implements HunahviewAPI
 		checkin.setEventId( eventName );
 		checkin.setBeerId( beerId );
 		checkin.setUsername( username );
+		checkin.setCheckinTime( new Date( System.currentTimeMillis() ) );
 		
 		DBObject obj = morphia.toDBObject( checkin );
 		

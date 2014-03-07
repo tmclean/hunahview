@@ -7,7 +7,7 @@ import java.util.List;
 import org.supercsv.io.Tokenizer;
 import org.supercsv.prefs.CsvPreference;
 
-import com.google.api.client.util.Strings;
+import com.google.common.base.Strings;
 
 public class CSVHeaderSkipper extends Tokenizer
 {

@@ -1,7 +1,7 @@
 package net.tmclean.hunahview.lib.data.source.hunahpu2014;
 
-import com.google.api.client.util.Strings;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import net.tmclean.hunahview.lib.data.model.Beer;
 

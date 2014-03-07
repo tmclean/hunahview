@@ -1,6 +1,6 @@
 package net.tmclean.hunahview.lib.data.model;
 
-import com.google.api.client.repackaged.com.google.common.base.Objects;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 public class NonUSLocation extends Location 

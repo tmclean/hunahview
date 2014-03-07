@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.google.api.client.util.Strings;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import net.tmclean.hunahview.lib.config.ContextAwareProperties;
 import net.tmclean.hunahview.lib.data.model.Beer;
